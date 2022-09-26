@@ -25,6 +25,14 @@ public class HttpClientTest {
 
         assertEquals(404, client.getStatusCode());
 
+    }@Test
+
+    void shouldGetFailureResponseCode() throws IOException {
+
+        var client = new HttpClient("httpbin.org",80,"/status/403");
+
+        assertEquals(403, client.getStatusCode());
+
     }
 
 
