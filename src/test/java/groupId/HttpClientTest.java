@@ -2,13 +2,15 @@ package groupId;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpClientTest {
 
     @Test
 
-    void shouldGetStatusCodeOk(){
+    void shouldGetStatusCodeOk() throws IOException {
 
         var client = new HttpClient("httpbin.org",80,"/html");
 
@@ -17,7 +19,7 @@ public class HttpClientTest {
 
     @Test
 
-    void shouldGetStatusCodeNotFound(){
+    void shouldGetStatusCodeNotFound() throws IOException {
 
         var client = new HttpClient("httpbin.org",80,"/bullshit");
 
