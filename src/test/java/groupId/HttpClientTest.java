@@ -25,13 +25,24 @@ public class HttpClientTest {
 
         assertEquals(404, client.getStatusCode());
 
-    }@Test
+    }
+
+    @Test
 
     void shouldGetFailureResponseCode() throws IOException {
 
         var client = new HttpClient("httpbin.org",80,"/status/403");
 
         assertEquals(403, client.getStatusCode());
+
+    }
+    @Test
+
+    void shouldReadResponseHeaders() throws IOException {
+
+        var client = new HttpClient("httpbin.org",80,"/html");
+
+        assertEquals("text/html; charset=utf-8", client.getHeader("Content-Type"));
 
     }
 

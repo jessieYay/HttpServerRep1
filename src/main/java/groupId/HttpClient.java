@@ -66,4 +66,8 @@ public class HttpClient {
 
         return this.statusCode;
     }
+
+    public String getHeader(String name) {
+        return null;
+    }
 }
