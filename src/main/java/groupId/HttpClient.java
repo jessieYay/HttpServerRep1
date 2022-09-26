@@ -10,6 +10,11 @@ public class HttpClient {
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
+        /*
+            Når vi instansierer ett socket object så kan host være en ip adresse. URL må kun presiseres i
+            requesten. IP er landet og url er byen vi skal til.
+         */
+
         Socket socket = new Socket(host, port);
 
         String request =
@@ -19,12 +24,8 @@ public class HttpClient {
                 "\r\n";
         socket.getOutputStream().write(request.getBytes());
 
-        int c;
-        StringBuilder line = new StringBuilder();
-        while((c = socket.getInputStream().read()) != -1 ){
-            line.append((char)c);
 
-        }
+        StringBuilder line = readLine(socket);
         System.out.println(line);
         statusCode = Integer.parseInt(line.toString().split(" ")[1]);
 
@@ -32,6 +33,15 @@ public class HttpClient {
 
 
 
+    }
+
+    private StringBuilder readLine(Socket socket) throws IOException {
+        StringBuilder line = new StringBuilder();
+        int c;
+        while((c = socket.getInputStream().read()) != '\r'){
+            line.append((char)c);
+        }
+        return line;
     }
 
     public static void main(String[] args) throws IOException {
