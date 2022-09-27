@@ -10,6 +10,7 @@ public class HttpClient {
 
     private int statusCode;
     private Map<String,String> headers = new HashMap<>();
+    private int contentLength;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -77,5 +78,10 @@ public class HttpClient {
 
     public String getHeader(String fieldName) {
         return headers.get(fieldName);
+    }
+
+    public int getContentLength() {
+
+        return this.contentLength;
     }
 }

@@ -46,6 +46,16 @@ public class HttpClientTest {
         assertEquals("close", client.getHeader("Connection"));
 
     }
+    @Test
+
+    void shouldReadContentLength() throws IOException {
+
+        var client = new HttpClient("httpbin.org",80,"/html");
+
+        assertEquals("3741", client.getHeader("Content-length"));
+        assertEquals(3741, client.getContentLength());
+
+    }
 
 
 
