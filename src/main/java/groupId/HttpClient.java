@@ -8,9 +8,10 @@ import java.util.Map;
 
 public class HttpClient {
 
-    private int statusCode;
+    private final int statusCode;
     private Map<String,String> headers = new HashMap<>();
-    private int contentLength;
+    private final int contentLength;
+    private final String body;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -29,7 +30,7 @@ public class HttpClient {
         socket.getOutputStream().write(request.getBytes());
 
         String line = readLine(socket);
-        System.out.println(line);
+        //System.out.println(line);
         statusCode = Integer.parseInt(line.split(" ")[1]);
 
 
@@ -40,6 +41,13 @@ public class HttpClient {
             headers.put(parts[0], parts[1]);
         }
         contentLength = Integer.parseInt(getHeader("Content-Length"));
+
+        // Bygger stringen som body skal inneholde
+        StringBuilder body = new StringBuilder();
+        for(int i = 0; i < contentLength; i++){
+            body.append((char)socket.getInputStream().read());// Filling the body one character at a time.
+        }
+        this.body = body.toString();
 
     }
 
@@ -54,7 +62,8 @@ public class HttpClient {
     }
 
     public static void main(String[] args) throws IOException {
-
+        var client = new HttpClient("httpbin.org",80,"/html");
+        System.out.println(client.getBody());
         Socket socket = new Socket("httpbin.org", 80);
         String hei;
         // alt + j kan man markere alle lignende ord eller betegnelser og markere dem.
@@ -83,5 +92,10 @@ public class HttpClient {
     public int getContentLength() {
 
         return this.contentLength;
+    }
+
+    public String getBody() {
+
+        return body;
     }
 }
