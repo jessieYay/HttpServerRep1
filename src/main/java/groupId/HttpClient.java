@@ -42,6 +42,11 @@ public class HttpClient {
         }
         contentLength = Integer.parseInt(getHeader("Content-Length"));
 
+        body = "";
+        for(int i = 0; i < contentLength; i++){
+            body += (char)socket.getInputStream().read();// Filling the body one character at a time.
+        }
+
     }
 
     private String readLine(Socket socket) throws IOException {
