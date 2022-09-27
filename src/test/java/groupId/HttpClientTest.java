@@ -52,7 +52,7 @@ public class HttpClientTest {
 
         var client = new HttpClient("httpbin.org",80,"/html");
 
-        assertEquals("3741", client.getHeader("Content-length"));
+        assertEquals("3741", client.getHeader("Content-Length"));
         assertEquals(3741, client.getContentLength());
 
     }

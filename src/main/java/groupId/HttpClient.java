@@ -32,14 +32,14 @@ public class HttpClient {
         System.out.println(line);
         statusCode = Integer.parseInt(line.split(" ")[1]);
 
+
         
         String headerLine;
         while(!(headerLine = readLine(socket)).isEmpty()){
             String[] parts = headerLine.split(":\\s*");
             headers.put(parts[0], parts[1]);
         }
-
-
+        contentLength = Integer.parseInt(getHeader("Content-Length"));
 
     }
 
