@@ -10,6 +10,7 @@ public class HttpClient {
 
     private int statusCode;
     private Map<String,String> headers = new HashMap<>();
+    private int contentLength;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -31,14 +32,14 @@ public class HttpClient {
         System.out.println(line);
         statusCode = Integer.parseInt(line.split(" ")[1]);
 
+
         
         String headerLine;
         while(!(headerLine = readLine(socket)).isEmpty()){
             String[] parts = headerLine.split(":\\s*");
             headers.put(parts[0], parts[1]);
         }
-
-
+        contentLength = Integer.parseInt(getHeader("Content-Length"));
 
     }
 
@@ -77,5 +78,10 @@ public class HttpClient {
 
     public String getHeader(String fieldName) {
         return headers.get(fieldName);
+    }
+
+    public int getContentLength() {
+
+        return this.contentLength;
     }
 }
