@@ -11,6 +11,7 @@ public class HttpClient {
     private int statusCode;
     private Map<String,String> headers = new HashMap<>();
     private int contentLength;
+    private String body;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -83,5 +84,10 @@ public class HttpClient {
     public int getContentLength() {
 
         return this.contentLength;
+    }
+
+    public String getBody() {
+
+        return body;
     }
 }
