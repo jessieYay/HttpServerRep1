@@ -3,10 +3,13 @@ package groupId;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpClient {
 
     private int statusCode;
+    private Map<String,String> headers = new HashMap<>();
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -24,24 +27,29 @@ public class HttpClient {
                 "\r\n";
         socket.getOutputStream().write(request.getBytes());
 
-
-        StringBuilder line = readLine(socket);
+        String line = readLine(socket);
         System.out.println(line);
-        statusCode = Integer.parseInt(line.toString().split(" ")[1]);
+        statusCode = Integer.parseInt(line.split(" ")[1]);
 
-
+        
+        String headerLine;
+        while(!(headerLine = readLine(socket)).isEmpty()){
+            String[] parts = headerLine.split(":\\s*");
+            headers.put(parts[0], parts[1]);
+        }
 
 
 
     }
 
-    private StringBuilder readLine(Socket socket) throws IOException {
+    private String readLine(Socket socket) throws IOException {
         StringBuilder line = new StringBuilder();
         int c;
         while((c = socket.getInputStream().read()) != '\r'){
             line.append((char)c);
         }
-        return line;
+        c = socket.getInputStream().read(); // Må lese en linje til pga \n.
+        return line.toString();
     }
 
     public static void main(String[] args) throws IOException {
@@ -65,5 +73,9 @@ public class HttpClient {
     public int getStatusCode() {
 
         return this.statusCode;
+    }
+
+    public String getHeader(String fieldName) {
+        return headers.get(fieldName);
     }
 }
