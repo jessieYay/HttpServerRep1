@@ -67,7 +67,6 @@ public class HttpClientTest {
 
         assertTrue(body.startsWith("<!DOCTYPE html>"));
         assertTrue(body.endsWith(" </body>\n</html>"));
-        assertEquals(body.length(), client.getContentLength());
 
     }
 

@@ -3,15 +3,12 @@ package groupId;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HttpClient {
 
+    private HttpMessage response;
     private final int statusCode;
-    private Map<String,String> headers = new HashMap<>();
-    private final int contentLength;
-    private final String body;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
 
@@ -21,7 +18,6 @@ public class HttpClient {
          */
 
         Socket socket = new Socket(host, port);
-
         String request =
                 "GET " + requestTarget + " HTTP/1.1\r\n" +
                 "Connection: close\r\n" +
@@ -29,36 +25,13 @@ public class HttpClient {
                 "\r\n";
         socket.getOutputStream().write(request.getBytes());
 
-        String line = readLine(socket);
+
+        response = new HttpMessage(socket);
+        String line = response.getStartLine();
         //System.out.println(line);
         statusCode = Integer.parseInt(line.split(" ")[1]);
 
 
-        
-        String headerLine;
-        while(!(headerLine = readLine(socket)).isEmpty()){
-            String[] parts = headerLine.split(":\\s*");
-            headers.put(parts[0], parts[1]);
-        }
-        contentLength = Integer.parseInt(getHeader("Content-Length"));
-
-        // Bygger stringen som body skal inneholde
-        StringBuilder body = new StringBuilder();
-        for(int i = 0; i < contentLength; i++){
-            body.append((char)socket.getInputStream().read());// Filling the body one character at a time.
-        }
-        this.body = body.toString();
-
-    }
-
-    private String readLine(Socket socket) throws IOException {
-        StringBuilder line = new StringBuilder();
-        int c;
-        while((c = socket.getInputStream().read()) != '\r'){
-            line.append((char)c);
-        }
-        c = socket.getInputStream().read(); // Må lese en linje til pga \n.
-        return line.toString();
     }
 
     public static void main(String[] args) throws IOException {
@@ -86,16 +59,16 @@ public class HttpClient {
     }
 
     public String getHeader(String fieldName) {
-        return headers.get(fieldName);
+        return response.getHeader(fieldName);
     }
 
     public int getContentLength() {
 
-        return this.contentLength;
+        return response.contentLength;
     }
 
     public String getBody() {
 
-        return body;
+        return response.body;
     }
 }
