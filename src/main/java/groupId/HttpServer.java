@@ -6,9 +6,35 @@ import java.nio.charset.StandardCharsets;
 
 public class HttpServer {
 
+    private ServerSocket serverSocket;
+
     public HttpServer(int port) throws IOException {
 
+        serverSocket = new ServerSocket(port);
+        start();
 
+
+    }
+
+    private void start() {
+
+        new Thread(() -> {
+            try {
+                var clientSocket = serverSocket.accept();
+                clientSocket.getOutputStream().write(("HTTP/1.1 404 NOT FOUND\r\n" +
+                        "\r\n"
+                        ).getBytes(StandardCharsets.UTF_8));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        System.out.println("Server started");
+    }
+
+    public int getPort() {
+        //getLocalPort er en innebygd metode i serversocket objektet, med den porten serveren faktisk bruker.
+        return serverSocket.getLocalPort();
     }
 
     public static void main(String[] args) throws IOException {
@@ -38,7 +64,5 @@ public class HttpServer {
 
     }
 
-    public int getPort() {
-        return 0;
-    }
+
 }
