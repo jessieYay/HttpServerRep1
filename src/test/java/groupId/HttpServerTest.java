@@ -26,11 +26,13 @@ class HttpServerTest {
         Path serverRoot = Path.of("target","test-files");
         Files.createDirectories(serverRoot);
         Path file = serverRoot.resolve("example-file-txt");
-        Files.writeString(file,"Hello there " + LocalDateTime.now());
+        var content = "Hello there " + LocalDateTime.now();
+        Files.writeString(file,content);
         var server = new HttpServer(0, serverRoot);
         var client = new HttpClient("localhost", server.getPort(), "/" + file.getFileName());
 
         assertEquals(200,client.getStatusCode());
+        assertEquals(content,client.getBody());
     }
 
 }

@@ -37,11 +37,16 @@ public class HttpServer {
 
     private void handleClient(Socket clientSocket) throws IOException {
         var request = new HttpMessage(clientSocket);
+        System.out.println(request.getStartLine());
         var requestResponse = request.getStartLine().split(" ")[1];
         // substring ser bort i ifra det første tegnet og ser på resten istedenfor.
-        if(Files.exists(serverRoot.resolve(requestResponse.substring(1)))){
+        Path requestPath = serverRoot.resolve(requestResponse.substring(1));
+        if(Files.exists(requestPath)){
+           var body = Files.readString(requestPath);
             clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
-                    "\r\n").getBytes(StandardCharsets.UTF_8));
+                    "Content-Length: " + body.length() + "\r\n" +
+                    "\r\n" +
+                    body).getBytes(StandardCharsets.UTF_8));
 
 
         }else{
