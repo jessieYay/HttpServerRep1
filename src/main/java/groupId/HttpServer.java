@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class HttpServer {
 
     private ServerSocket serverSocket;
+    private final Path serverRoot;
 
-    public HttpServer(int port) throws IOException {
+    public HttpServer(int port, Path serverRoot) throws IOException {
 
         serverSocket = new ServerSocket(port);
+        this.serverRoot = serverRoot;
         start();
 
 
@@ -34,6 +38,15 @@ public class HttpServer {
     private void handleClient(Socket clientSocket) throws IOException {
         var request = new HttpMessage(clientSocket);
         var requestResponse = request.getStartLine().split(" ")[1];
+        // substring ser bort i ifra det første tegnet og ser på resten istedenfor.
+        if(Files.exists(serverRoot.resolve(requestResponse.substring(1)))){
+            clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
+                    "\r\n").getBytes(StandardCharsets.UTF_8));
+
+
+        }else{
+
+        }
         var responseBody = "Unknown URL " + requestResponse + "";
         clientSocket.getOutputStream().write(("HTTP/1.1 404 NOT FOUND\r\n" +
                 "Content-Type: text/plain\r\n" +
@@ -50,7 +63,7 @@ public class HttpServer {
 
     public static void main(String[] args) throws IOException {
 
-        var server = new HttpServer(9080);
+        var server = new HttpServer(9080, Path.of("."));
 
 
     }
