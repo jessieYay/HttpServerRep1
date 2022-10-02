@@ -12,9 +12,10 @@ class HttpServerTest {
 
     void shouldRespondWith404ToUnknownUrl() throws IOException {
         var server = new HttpServer(0);
-        var client = new HttpClient("localhost", server.getPort(), "/unknown url");
+        var client = new HttpClient("localhost", server.getPort(), "/unknown-url");
 
         assertEquals(404,client.getStatusCode());
+        assertEquals("Unknown URL /unknown-url",client.getBody());
     }
 
 }

@@ -2,6 +2,7 @@ package groupId;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class HttpServer {
@@ -21,15 +22,25 @@ public class HttpServer {
         new Thread(() -> {
             try {
                 var clientSocket = serverSocket.accept();
-                clientSocket.getOutputStream().write(("HTTP/1.1 404 NOT FOUND\r\n" +
-                        "\r\n"
-                        ).getBytes(StandardCharsets.UTF_8));
+                handleClient(clientSocket);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
         System.out.println("Server started");
+    }
+
+    private void handleClient(Socket clientSocket) throws IOException {
+        var request = new HttpMessage(clientSocket);
+        var requestResponse = request.getStartLine().split(" ")[1];
+        var responseBody = "Unknown URL " + requestResponse + "";
+        clientSocket.getOutputStream().write(("HTTP/1.1 404 NOT FOUND\r\n" +
+                "Content-Type: text/plain\r\n" +
+                "Content-Length: " + responseBody.length() + "\r\n" +
+                "\r\n" +
+                responseBody +
+                "\r\n").getBytes(StandardCharsets.UTF_8));
     }
 
     public int getPort() {
@@ -44,9 +55,8 @@ public class HttpServer {
 
         var clientSocket = serverSocket.accept();
 
-        var request = new HttpMessage(clientSocket);
-        System.out.println(request.getStartLine());
-        System.out.println(request.headers);
+
+
 
         var body = "<html><h1>Hello world and Jessie!</h1></html>";
         var contentLength = body.getBytes().length;
@@ -57,7 +67,7 @@ public class HttpServer {
                 "Content-Length " + contentLength + "\r\n" +
                 "Connection: keep-alive\r\n" +
                 "\r\n" +
-                body).getBytes(StandardCharsets.UTF_8));
+                body ).getBytes(StandardCharsets.UTF_8));
 
         // text/html; charset=utf-8
         // text/plain;
