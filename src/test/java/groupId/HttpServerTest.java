@@ -53,7 +53,14 @@ class HttpServerTest {
         assertEquals(500,new HttpClient("localhost", server.getPort(), "/foo*bar")
                 .getStatusCode()
         );
+    }
 
+    @Test
+    void shouldHandleEchoRequest() throws IOException {
+        var server = new HttpServer(0, serverRoot);
+        assertEquals("Hello",new HttpClient("localhost", server.getPort(), "/api/echo?input-string=Hello")
+                .getBody()
+        );
 
     }
 
