@@ -41,9 +41,24 @@ public class HttpServer {
         try {
             var request = new HttpMessage(clientSocket);
             System.out.println(request.getStartLine());
-            var requestResponse = request.getStartLine().split(" ")[1];
+            var requestTarget = request.getStartLine().split(" ")[1];
+            //Trenger å finne hvor spørsmålstegnet er. Gjør mer av dette senere.
+            var queryPosition = requestTarget.indexOf("?");
+            if(queryPosition>= 0){
+                String query = requestTarget.substring(queryPosition+1);
+                requestTarget = requestTarget.substring(0,queryPosition);
+            }
+            if(requestTarget.equals("/api/echo")){
+                var body = "Hello";
+                clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
+                        "Connection: close\r\n" +
+                        "Content-Length: " + body.length() + "\r\n" +
+                        "\r\n" +
+                        body).getBytes(StandardCharsets.UTF_8));
+
+            }
             // substring ser bort i ifra det første tegnet og ser på resten istedenfor.
-            Path requestPath = serverRoot.resolve(requestResponse.substring(1));
+            Path requestPath = serverRoot.resolve(requestTarget.substring(1));
             if(Files.exists(requestPath)){
                var body = Files.readString(requestPath);
                 clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
@@ -55,7 +70,7 @@ public class HttpServer {
 
             }else {
 
-                var responseBody = "Unknown URL " + requestResponse + "";
+                var responseBody = "Unknown URL " + requestTarget + "";
                 clientSocket.getOutputStream().write(("HTTP/1.1 404 NOT FOUND\r\n" +
                         "Content-Type: text/plain\r\n" +
                         "Connection: close\r\n" +
