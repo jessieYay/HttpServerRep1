@@ -16,13 +16,16 @@ public class HttpMessage {
     public HttpMessage(Socket socket) throws IOException {
         startLine = readLine(socket);
         headers = readHeaders(socket);
-        contentLength = Integer.parseInt(getHeader("Content-Length"));
+        if(getHeader("Content-Length") != null){
+            contentLength = Integer.parseInt(getHeader("Content-Length"));
+            body = readBody(socket);
+        }
         /*
             Bygger stringen som body skal inneholde.
             Men vi må transformere den via ett byte array på lengde med contentlength.
             Vi mister litt i oversetningen hvis vi gjør det direkte til string.
          */
-        body = readBody(socket);
+
     }
 
 
