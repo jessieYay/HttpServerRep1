@@ -1,5 +1,6 @@
 package groupId;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -30,13 +31,13 @@ public class HttpMessage {
 
 
     private String readLine(Socket socket) throws IOException {
-        StringBuilder line = new StringBuilder();
+        ByteArrayOutputStream line = new ByteArrayOutputStream();
         int c;
         while((c = socket.getInputStream().read()) != '\r'){
-            line.append((char)c);
+            line.write((byte)c);
         }
         c = socket.getInputStream().read(); // Må lese en linje til pga \n.
-        return line.toString();
+        return line.toString(StandardCharsets.UTF_8);
     }
 
     private Map<String, String> readHeaders(Socket socket) throws IOException {

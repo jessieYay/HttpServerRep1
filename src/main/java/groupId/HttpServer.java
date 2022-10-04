@@ -65,8 +65,9 @@ public class HttpServer {
             if(requestTarget.equals("/api/echo")){
                 var body = queryParameters.get("input-string");
                 clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
+                        "Content-Type: text/plain; charset=utf-8\r\n" +
                         "Connection: close\r\n" +
-                        "Content-Length: " + body.length() + "\r\n" +
+                        "Content-Length: " + body.getBytes(StandardCharsets.UTF_8).length + "\r\n" +
                         "\r\n" +
                         body).getBytes(StandardCharsets.UTF_8));
 
