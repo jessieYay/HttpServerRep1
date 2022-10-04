@@ -3,9 +3,11 @@ package groupId;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 public class HttpServer {
 
@@ -42,14 +44,26 @@ public class HttpServer {
             var request = new HttpMessage(clientSocket);
             System.out.println(request.getStartLine());
             var requestTarget = request.getStartLine().split(" ")[1];
-            //Trenger å finne hvor spørsmålstegnet er. Gjør mer av dette senere.
-            var queryPosition = requestTarget.indexOf("?");
-            if(queryPosition>= 0){
-                String query = requestTarget.substring(queryPosition+1);
-                requestTarget = requestTarget.substring(0,queryPosition);
+            /*
+            Trenger å finne hvor spørsmålstegnet er. Gjør mer av dette senere.
+            Når man bruker regex kan man ikke bare skrive ?. Det er noe annet i
+            reqex. Derfor \\ må plasseres foran for at det skal tolkes som ett
+            spørsmålstegn
+             */
+            var targetParts = requestTarget.split("\\?",2);
+            var queryParameters = new HashMap<String,String>();
+            if(targetParts.length>= 2){
+                String query = targetParts[1];
+                requestTarget = targetParts[0];
+                for(String queryParam : query.split("&")){
+                    var parameterParts = queryParam.split("=",2);
+                    //Finnes innebygget i java en magisk formel for å fikse string encoding i nettleser.
+                    queryParameters.put(URLDecoder.decode(parameterParts[0], StandardCharsets.UTF_8),
+                            URLDecoder.decode(parameterParts[1], StandardCharsets.UTF_8));
+                }
             }
             if(requestTarget.equals("/api/echo")){
-                var body = "Hello";
+                var body = queryParameters.get("input-string");
                 clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
                         "Connection: close\r\n" +
                         "Content-Length: " + body.length() + "\r\n" +
