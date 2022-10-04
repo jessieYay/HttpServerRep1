@@ -89,5 +89,16 @@ class HttpServerTest {
 
 
     }
+    @Test
+    void shouldServeBinaryFiles() throws IOException {
+        var testResources = Path.of("src","test","resources");
+        var server = new HttpServer(0, testResources);
+        var client = new HttpClient("localhost", server.getPort(), "/image.png");
+
+        assertEquals(testResources.resolve("image.png").toFile().length(),client.getContentLength());
+
+
+
+    }
 
 }
