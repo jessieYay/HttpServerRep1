@@ -1,5 +1,6 @@
 package groupId;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -83,8 +84,10 @@ public class HttpServer {
                         "Connection: close\r\n" +
                         "Content-Length: " + requestPath.toFile().length() + "\r\n" +
                         "\r\n").getBytes(StandardCharsets.UTF_8));
-                clientSocket.getOutputStream().write(Files.readAllBytes(requestPath));
-
+                try (var fileInputStream = new FileInputStream(requestPath.toFile())) {
+                    fileInputStream.transferTo(clientSocket.getOutputStream());
+                }
+                // clientSocket.getOutputStream().write(Files.readAllBytes(requestPath));
 
             }else {
 
