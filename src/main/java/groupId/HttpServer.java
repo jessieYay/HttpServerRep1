@@ -78,12 +78,12 @@ public class HttpServer {
                 requestPath = requestPath.resolve("index.html");
             }
             if(Files.exists(requestPath)){
-               var body = Files.readString(requestPath);
+               //var body = Files.readString(requestPath);
                 clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
                         "Connection: close\r\n" +
-                        "Content-Length: " + body.length() + "\r\n" +
-                        "\r\n" +
-                        body).getBytes(StandardCharsets.UTF_8));
+                        "Content-Length: " + requestPath.toFile().length() + "\r\n" +
+                        "\r\n").getBytes(StandardCharsets.UTF_8));
+                clientSocket.getOutputStream().write(Files.readAllBytes(requestPath));
 
 
             }else {
